@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+
+        <title>Twitter</title>
+        <style>
+            *{margin:0;padding:0;}
+            .clearboth{clear:both;}
+            body { width: 100%; height:100%; font-family:helvetica;background:#000 url('background.png') center -100px no-repeat; background-attachment:fixed; background-size:100%;}
+            h3{color:#fff;}
+            ul { list-style: none; }
+            li { padding-bottom: 1em; padding:10px; border-bottom:1px solid #000; }
+            img { float: left; margin-right:10px;}
+            a { text-decoration: none; color: pink; }
+            p{font-size:14px; letter-spacing:.1em; color:#fff;}
+            .highlight { font-weight:bold; background: rgba(206,109,246,.6); color:#fff;}
+            </style>
+
+        
+	<script src="phonegap-1.2.0.js"></script>
+	<script src="js/jquery-1.5.min.js"></script>
+	
+	
+	<script>
+		function onBodyLoad() {		
+			document.addEventListener("deviceready",onDeviceReady,false);
+		}
+	</script>
+</head>
+    <body>
+        <ul id="tweets">
+            <script id="tweets-template" type="text/x-handlebars-template">
+                {{#each this}}
+                <li>
+                <img src="{{thumb}}" alt="{{author}}">
+                <p>{{tweet}}</p>
+                <div class="clearboth"></div>
+                </li>
+                {{/each}}
+                </script>		
+        </ul>
+        
+        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        
+        <script src="phonegap-1.2.0.js"></script>
+        
+        <script src="http://johannburkard.de/resources/Johann/jquery.highlight-3.js"></script>
+        
+        <script src="http://cloud.github.com/downloads/wycats/handlebars.js/handlebars-1.0.0.beta.6.js"></script>
+        
+        
+        
+        
+        <script>
+            
+            (function() {
+             
+             $('body').highlight('#her');
+             
+             var Twitter = {
+             init: function( config ) {
+             this.url = 'http://search.twitter.com/search.json?q=' + config.query + '&callback=?';
+             this.template = config.template;
+             this.container = config.container;
+             
+             this.fetch();
+             },
+             
+             attachTemplate: function() {
+             var template = Handlebars.compile( this.template );
+             
+             this.container.append( template( this.tweets ) );
+             
+             },
+             
+             fetch: function() {
+             var self = this;
+             
+             $.getJSON( this.url, function( data ) {
+                       self.tweets = $.map( data.results, function( tweet ) {
+                                           return {
+                                           author: tweet.from_user,
+                                           tweet: tweet.text,
+                                           thumb: tweet.profile_image_url,
+                                           url: 'http://twitter.com/' + tweet.from_user + '/status/' + tweet.id_str
+                                           };
+                                           });
+                       
+                       // For future lessons, research $.deferred, viewers. :)
+                       self.attachTemplate(); 
+                       });
+             }
+             };
+             
+             Twitter.init({
+                          template: $('#tweets-template').html(),
+                          container: $('#tweets'),
+                          query: '%23her'
+                          });
+             
+             })();
+            var timerId = setTimeout(function() {
+                                     $('li').highlight('#her');
+                                     }, 1000);
+            
+            </script>
+        
+        
+    </body>
+</html>
